@@ -89,7 +89,15 @@ namespace PhotonTutorial
             // もちろんボタンと同じように [SerializeField] で参照を持っても良い
             _photonView = GetComponent<PhotonView>();
         }
-
+        private void Update()
+        {
+            if (PhotonNetwork.InRoom && Input.GetMouseButtonDown(0))
+            {
+                var sender = PhotonNetwork.NickName;
+                var position = Input.mousePosition;
+                _photonView.RPC("NotifyClick", RpcTarget.AllViaServer, sender, position);
+            }
+        }
 
         // =======================================
         // ボタンクリック時のイベント実装
@@ -152,7 +160,11 @@ namespace PhotonTutorial
             AppendLog($"{sender}> {message}");
         }
 
-
+        [PunRPC]
+        private void NotifyClick(string sender, Vector3 postion)
+        {
+            AppendLog($"{sender}> {postion}");
+        }
         // =======================================
         // MonoBehaviourPunCallbacks
         // =======================================
@@ -239,4 +251,5 @@ namespace PhotonTutorial
             }
         }
     }
+ 
 }
