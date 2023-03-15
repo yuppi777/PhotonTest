@@ -60,6 +60,20 @@ namespace PhotonTutorial
         // Photonネットワーク越しにRPCのやり取りをするために必要なコンポーネント
         private PhotonView _photonView;
 
+        /// <summary>
+        /// マウスマーカーのImage
+        /// </summary>
+        [SerializeField]
+        private GameObject _mouseMakar;
+
+    
+
+        [SerializeField]
+        private Vector3 _mouseVector3;
+
+        [SerializeField]
+        private Canvas _canvas;
+
         private void Awake()
         {
             // Assertがたくさん
@@ -88,15 +102,28 @@ namespace PhotonTutorial
             // この GameObject にアタッチされているPhotonViewコンポーネントを取得
             // もちろんボタンと同じように [SerializeField] で参照を持っても良い
             _photonView = GetComponent<PhotonView>();
+
+            _mouseMakar.AddComponent<RectTransform>();
+            _mouseMakar.AddComponent<Image>();
+            _mouseMakar.transform.SetParent(_canvas.transform, false);
         }
         private void Update()
         {
+            _mouseMakar.transform.position = _mouseVector3;
+
             if (PhotonNetwork.InRoom && Input.GetMouseButtonDown(0))
             {
                 var sender = PhotonNetwork.NickName;
                 var position = Input.mousePosition;
                 _photonView.RPC("NotifyClick", RpcTarget.AllViaServer, sender, position);
+
+                _mouseVector3 = position;
+
+                //Instantiate(_mouseMakar, _mouseVector3, Quaternion.identity);
+
+                //Instantiate(_mouseMakar, position, Quaternion.identity);
             }
+            
         }
 
         // =======================================
